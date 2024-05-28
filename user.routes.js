@@ -1,11 +1,11 @@
 import express from 'express'
-import registration from './auth.js';
+import Auth from './auth.js';
 
 const userRoute = express.Router();
 
-
-userRoute.route('/registration').post(registration);
-
-// userRoute.route('/login').post()
+//route to registration with passing registration function
+userRoute.route('/registration').post(Auth.registration);
+//routr to login with passing login function
+userRoute.route('/login').post(Auth.logIn);
 
 export default userRoute;

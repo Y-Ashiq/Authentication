@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
-import email1 from 'validator';
+import email from 'validator';
 
-const {isEmail} =email1;
+const {isEmail} =email;
 
 
 const UserSchema = new mongoose.Schema({
