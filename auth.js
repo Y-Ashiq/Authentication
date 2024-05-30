@@ -1,11 +1,26 @@
 import user from './userSchema.js'
 import bcrypt from 'bcrypt'
+import jwt  from 'jsonwebtoken'
+import cookie from 'cookieparser'
+import 'dotenv/config'
 
 /*
 function to handle registration of the user with valditaion and hashing password
 and then store the the user informartion into database
 
 */
+
+const createTokken = (id)=>{
+    const maxAge = 3 *24*60*60;
+    
+
+    return jwt.sign({id},process.env.ACCESS_TOKKEN_SECRE ,
+        {
+            expiresIn: maxAge
+        })
+
+}
+
 const registration = async (req, res) => {
 
     let {
@@ -30,6 +45,7 @@ const registration = async (req, res) => {
                 message: "sorry this email or phone number is already used"
             })
         } else {
+
             //if the user is new we hash his password and then store the information into the database
             let hasedPassowrd = await bcrypt.hash(password, 10);
             password = hasedPassowrd;
@@ -41,6 +57,13 @@ const registration = async (req, res) => {
                 phoneNumber,
                 password
             })
+
+            const token = createTokken(email);
+
+
+            res.cookie("jwt" , token)
+
+            
             res.status(200).json({
                 message: "User successfully created",
 
@@ -69,6 +92,7 @@ this function handle the login of the user and compare the password with hashed 
 */
 
 
+
 const logIn = async (req, res) => {
 
 
@@ -78,14 +102,15 @@ const logIn = async (req, res) => {
             email,
             password
         } = req.body;
-// check of the user email from request if the user exist
+        // check of the user email from request if the user exist
+
         const userAuth = await user.findOne({
             email
         })
         if (userAuth) {
             //and compare the hashed password to login the user
             
-            bcrypt.compare(password, userAuth.password).then(function (result) {
+            bcrypt.compare(password, userAuth.password).then( (result)=> {
                 if (result) {
                     res.status(200).json({
                         message: "logged in succefully"

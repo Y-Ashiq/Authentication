@@ -2,6 +2,7 @@ import express from 'express'
 import connectDB from './database.js'
 import userRoute from './user.routes.js'
 
+
 const app = express()
 const port = 3000
 

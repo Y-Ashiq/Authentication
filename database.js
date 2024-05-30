@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
-const uri = "mongodb://localhost:27017/Users";
+import 'dotenv/config'
+
+const uri = process.env.DATABASE_URI;
 
 const connectDB = async () => {
     try {
