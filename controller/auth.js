@@ -1,7 +1,6 @@
-import user from './userSchema.js'
+import user from '../model/userSchema.js'
 import bcrypt from 'bcrypt'
-import jwt  from 'jsonwebtoken'
-import cookie from 'cookieparser'
+import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 
 /*
@@ -10,14 +9,15 @@ and then store the the user informartion into database
 
 */
 
-const createTokken = (id)=>{
-    const maxAge = 3 *24*60*60;
-    
+const maxAge = 3 * 24 * 60 * 60;
+const createTokken = (id) => {
 
-    return jwt.sign({id},process.env.ACCESS_TOKKEN_SECRE ,
-        {
-            expiresIn: maxAge
-        })
+
+    return jwt.sign({
+        id
+    }, process.env.ACCESS_TOKKEN_SECRET, {
+        expiresIn: maxAge
+    })
 
 }
 
@@ -51,19 +51,21 @@ const registration = async (req, res) => {
             password = hasedPassowrd;
 
 
-            await user.create({
+            const userData = await user.create({
                 name,
                 email,
                 phoneNumber,
                 password
             })
 
-            const token = createTokken(email);
+            const token = createTokken(userData._id);
+
+            res.cookie("jwt", token, {
+                maxAge: maxAge * 1000,
+                httpOnly: true
+            })
 
 
-            res.cookie("jwt" , token)
-
-            
             res.status(200).json({
                 message: "User successfully created",
 
@@ -76,7 +78,7 @@ const registration = async (req, res) => {
 
     } catch (error) {
         res.status(400).json({
-            message: error
+            message: error.message
         });
 
     }
@@ -109,8 +111,8 @@ const logIn = async (req, res) => {
         })
         if (userAuth) {
             //and compare the hashed password to login the user
-            
-            bcrypt.compare(password, userAuth.password).then( (result)=> {
+
+            bcrypt.compare(password, userAuth.password).then((result) => {
                 if (result) {
                     res.status(200).json({
                         message: "logged in succefully"
