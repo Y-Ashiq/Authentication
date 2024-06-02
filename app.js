@@ -8,6 +8,11 @@ const port = 3000
 
 app.use(express.json())
 app.use(userRoute)
+app.set('views', './view');
+
+app.set("view engine", "ejs")
+app.get("/register", (req, res) => res.render("signUp"))
+
 
 //connecting to database
 connectDB()
