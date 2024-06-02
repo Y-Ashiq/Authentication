@@ -1,21 +1,17 @@
-import express from 'express'
-import connectDB from './configs/database.js'
-import userRoute from './routes/user.routes.js'
+import express from "express";
+import connectDB from "./configs/database.js";
+import userRoute from "./routes/user.routes.js";
 
+const app = express();
+const port = 3000;
 
-const app = express()
-const port = 3000
+app.use(express.json());
 
-app.use(express.json())
-app.use(userRoute)
-app.set('views', './view');
-
-app.set("view engine", "ejs")
-app.get("/register", (req, res) => res.render("signUp"))
-
+//user routing
+app.use(userRoute);
 
 //connecting to database
-connectDB()
-app.get('/', (req, res) => res.send('Hello World!'))
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+connectDB();
 
+app.get("/", (req, res) => res.send("server connected!"));
+app.listen(port, () => console.log(`Example app listening on port ${port}!`));
